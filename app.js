@@ -311,11 +311,11 @@ function updateStudyTimeDisplay(subject, timeElement) {
   
   let timeText = '';
   if (totalTime === 0) {
-    timeText = '⏱ 0m';
+    timeText = '0m';
   } else if (hours > 0) {
-    timeText = `⏱ ${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
+    timeText = `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
   } else {
-    timeText = `⏱ ${minutes}m`;
+    timeText = `${minutes}m`;
   }
   
   console.log(`${subject.name} の学習時間を更新: ${totalTime}分 → ${timeText}, 要素ID: ${timeElement.id}`);
