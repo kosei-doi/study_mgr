@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学習進捗管理</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">📚 学習進捗管理</h1>
+    <div class="header-controls">
+      <div class="summary-stats">
+        <div class="stat-card">
+          <div class="stat-label">全体進捗</div>
+          <div class="stat-value" id="overallProgress">0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">合計学習時間</div>
+          <div class="stat-value" id="totalStudyTime">0h 0m</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">現在週</div>
+          <div class="stat-value" id="currentWeekDisplay">第0週</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <main>
+      <div id="timetable" class="timetable" aria-label="時間割" role="grid" aria-readonly="true"></div>
+    </main>
+  </div>
+
+  <div id="subjectModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal-content">
+      <h2 id="modalTitle">進捗更新</h2>
+      <p id="modalSubjectName" class="modal-subtitle"></p>
+      
+      <div class="progress-display">
+        <div class="current-progress">
+          <span class="progress-label">現在の理解度</span>
+          <span id="currentProgressDisplay" class="progress-value">0回</span>
+        </div>
+        <div class="progress-bar-container">
+          <div id="modalProgressBar" class="modal-progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="understandBtn" class="btn primary large">
+          <span class="btn-icon">✓</span>
+          理解した！
+        </button>
+      </div>
+
+      <div class="time-selector-section">
+        <label>学習時間を追加</label>
+        
+        <div class="time-add-buttons">
+          <button class="time-add-btn" data-time="15">
+            <span class="add-icon">+</span>
+            <span class="add-time">15分</span>
+          </button>
+          <button class="time-add-btn" data-time="30">
+            <span class="add-icon">+</span>
+            <span class="add-time">30分</span>
+          </button>
+          <button class="time-add-btn" data-time="45">
+            <span class="add-icon">+</span>
+            <span class="add-time">45分</span>
+          </button>
+          <button class="time-add-btn" data-time="60">
+            <span class="add-icon">+</span>
+            <span class="add-time">60分</span>
+          </button>
+        </div>
+
+        <div class="time-custom-input">
+          <input type="number" id="customTimeInput" min="1" max="180" placeholder="カスタム（分）" />
+          <button id="addCustomTimeBtn" class="btn-add-custom">追加</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancelModalBtn" class="btn">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="firebase-config.js"></script>
+  <script src="data/classDays.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

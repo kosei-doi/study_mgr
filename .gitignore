@@ -1,0 +1,19 @@
+# Firebase設定ファイル（個人用）
+firebase-config.js
+
+# デバッグ用ファイル
+test-debug.html
+
+# macOS
+.DS_Store
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ログ
+*.log
+

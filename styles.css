@@ -1,0 +1,636 @@
+:root {
+  --bg: #f7f8fb;
+  --panel: #ffffff;
+  --text: #0e1217;
+  --muted: #596275;
+  --border: #e6e8f0;
+  --primary: #3b82f6;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --gray: #9aa4b2;
+  --cell-h: 96px; /* 固定セル高さ */
+}
+
+/* テーマ切替は廃止（デフォルト変数のみ使用） */
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container { max-width: 1100px; margin: 0 auto; }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.app-title { margin: 0; font-size: 18px; }
+.header-controls { display: flex; gap: 12px; align-items: center; }
+
+.summary-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 120px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.week-info { background: var(--primary); color: white; padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+
+.btn, .icon-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.icon-btn { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; }
+
+/* 統計セクションは削除 */
+
+.timetable {
+  margin: 12px 20px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.timetable [role="row"] { display: grid; grid-template-columns: 90px repeat(5, 1fr); }
+.timetable [role="columnheader"], .timetable [role="gridcell"] {
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 10px;
+}
+.timetable [role="columnheader"] { background: rgba(0,0,0,0.02); font-weight: 600; }
+.timetable .slot-title { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.timetable .subject-name { font-weight: 600; margin-bottom: 6px; }
+.timetable [role="gridcell"] { height: var(--cell-h); display: flex; flex-direction: column; justify-content: center; position: relative; }
+.timetable .subject-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.timetable .progress {
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.timetable .progress-bar { height: 100%; width: 0%; background: var(--gray); transition: width .2s ease, background .2s ease; }
+
+/* 時間割のプログレスバーの色 */
+.timetable .progress-bar.pct-0 { background: #d1d5db; }
+.timetable .progress-bar.pct-1 { background: linear-gradient(90deg, #ef4444, #f87171); }
+.timetable .progress-bar.pct-2 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.timetable .progress-bar.pct-3 { background: linear-gradient(90deg, #10b981, #34d399); }
+.timetable .progress-bar.pct-4 { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.timetable .progress-text { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+.timetable .today-col { background: rgba(59, 130, 246, 0.06); box-shadow: inset 0 0 0 1px rgba(59,130,246,0.15); }
+
+.timetable [role="gridcell"] { cursor: pointer; }
+.timetable [role="gridcell"]:hover { background: rgba(0,0,0,0.03); }
+
+.tooltip { position: absolute; background: var(--panel); border: 1px solid var(--border); padding: 8px 10px; border-radius: 8px; width: 280px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); transform: translateY(8px); right: 20px; }
+
+.modal { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,0.4); }
+.modal[hidden] { display: none; }
+.modal-content { width: 360px; max-width: calc(100% - 40px); background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.modal-subtitle { color: var(--muted); margin-top: -6px; }
+.modal-row { display: grid; gap: 6px; margin-top: 12px; }
+.input-group { display: flex; gap: 8px; align-items: center; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+
+/* progress color thresholds */
+.pct-0 { background: #d1d5db; }
+.pct-1 { background: linear-gradient(90deg, #ef4444, #f87171); }
+.pct-2 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.pct-3 { background: linear-gradient(90deg, #10b981, #34d399); }
+.pct-4 { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+
+/* focus */
+button:focus, input:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 8px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+
+  .summary-stats {
+    flex-direction: row;
+    width: 100%;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .stat-card {
+    min-width: 90px;
+    padding: 6px 10px;
+    flex-shrink: 0;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  /* 時間割のコンパクト表示 */
+  .timetable {
+    margin: 8px 0;
+  }
+
+  .timetable [role="row"] {
+    grid-template-columns: 40px repeat(5, 1fr);
+  }
+
+  .timetable [role="columnheader"],
+  .timetable [role="gridcell"] {
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+
+  .timetable .slot-title {
+    font-size: 10px;
+  }
+
+  .timetable .subject-name {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .timetable .progress {
+    height: 6px;
+  }
+
+  .timetable .progress-text {
+    font-size: 9px;
+    margin-top: 4px;
+  }
+
+  .study-time {
+    font-size: 8px;
+    bottom: 3px;
+    right: 3px;
+  }
+
+  .timetable [role="gridcell"] {
+    height: 80px;
+  }
+
+  /* モーダル */
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    padding: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-content h2 {
+    font-size: 18px;
+  }
+
+  .modal-subtitle {
+    font-size: 13px;
+  }
+
+  /* 時間追加ボタン */
+  .time-add-buttons {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .time-add-btn {
+    padding: 12px;
+  }
+
+  .time-add-btn .add-icon {
+    font-size: 16px;
+  }
+
+  .time-add-btn .add-time {
+    font-size: 14px;
+  }
+
+  .time-custom-input {
+    padding: 10px;
+  }
+
+  #customTimeInput {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .btn-add-custom {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+
+  .app-header {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .app-title {
+    font-size: 13px;
+  }
+
+  .summary-stats {
+    gap: 4px;
+  }
+
+  .stat-card {
+    min-width: 70px;
+    padding: 4px 8px;
+  }
+
+  .stat-label {
+    font-size: 8px;
+  }
+
+  .stat-value {
+    font-size: 12px;
+  }
+
+  /* 時間割を極限までコンパクトに */
+  .timetable {
+    margin: 4px 0;
+  }
+
+  .timetable [role="row"] {
+    grid-template-columns: 30px repeat(5, 1fr);
+  }
+
+  .timetable [role="columnheader"],
+  .timetable [role="gridcell"] {
+    padding: 4px 2px;
+    font-size: 9px;
+  }
+
+  /* 曜日を短縮表示 */
+  .timetable [role="columnheader"]:nth-child(2)::before { content: '月'; }
+  .timetable [role="columnheader"]:nth-child(3)::before { content: '火'; }
+  .timetable [role="columnheader"]:nth-child(4)::before { content: '水'; }
+  .timetable [role="columnheader"]:nth-child(5)::before { content: '木'; }
+  .timetable [role="columnheader"]:nth-child(6)::before { content: '金'; }
+  .timetable [role="columnheader"]:nth-child(n+2) {
+    font-size: 0;
+    text-indent: -9999px;
+  }
+  .timetable [role="columnheader"]:nth-child(n+2)::before {
+    font-size: 10px;
+    text-indent: 0;
+    display: inline-block;
+  }
+
+  .timetable .slot-title {
+    font-size: 9px;
+  }
+
+  .timetable .subject-name {
+    font-size: 9px;
+    margin-bottom: 2px;
+  }
+
+  .timetable .progress {
+    height: 4px;
+  }
+
+  .timetable .progress-text {
+    font-size: 8px;
+    margin-top: 2px;
+  }
+
+  .study-time {
+    font-size: 7px;
+    bottom: 2px;
+    right: 2px;
+  }
+
+  .timetable [role="gridcell"] {
+    height: 85px;
+  }
+
+  /* モーダル */
+  .time-add-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    padding: 12px;
+  }
+
+  .btn.large {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .time-add-btn {
+    padding: 10px;
+  }
+
+  .time-add-btn .add-icon {
+    font-size: 14px;
+  }
+
+  .time-add-btn .add-time {
+    font-size: 13px;
+  }
+}
+
+/* 新しいモーダルデザイン */
+.progress-display {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.current-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progress-label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.progress-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.progress-bar-container {
+  height: 8px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.modal-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.modal-progress-bar.pct-0 { background: #d1d5db; }
+.modal-progress-bar.pct-1 { background: linear-gradient(90deg, #ef4444, #f87171); }
+.modal-progress-bar.pct-2 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.modal-progress-bar.pct-3 { background: linear-gradient(90deg, #10b981, #34d399); }
+.modal-progress-bar.pct-4 { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.btn.large {
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.btn.secondary {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn.secondary:hover {
+  background: var(--hover);
+}
+
+.time-input-section {
+  margin: 20px 0;
+}
+
+.time-quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.time-btn {
+  padding: 12px 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* スマートな時間追加UI */
+.time-selector-section {
+  margin: 20px 0;
+}
+
+.time-selector-section label {
+  display: block;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.time-add-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.time-add-btn {
+  padding: 16px;
+  background: linear-gradient(135deg, var(--panel), var(--bg));
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.time-add-btn .add-icon {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.time-add-btn .add-time {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.time-add-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+}
+
+.time-add-btn:hover .add-icon,
+.time-add-btn:hover .add-time {
+  color: white;
+}
+
+.time-add-btn:active {
+  transform: scale(0.98);
+}
+
+.time-custom-input {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+#customTimeInput {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+}
+
+#customTimeInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.btn-add-custom {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-custom:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+
+/* 学習時間表示 */
+.study-time {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  display: block;
+}
+
+/* 学習時間の色分け */
+.time-none {
+  color: var(--muted);
+}
+
+.time-low {
+  color: #92400e;
+}
+
+.time-medium {
+  color: #c2410c;
+}
+
+.time-high {
+  color: #dc2626;
+}
+
+.time-very-high {
+  color: #166534;
+}
+
+
+
+
