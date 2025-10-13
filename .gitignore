@@ -1,5 +1,6 @@
 # デバッグ用ファイル
 test-debug.html
+reset-firebase.html
 
 # macOS
 .DS_Store
