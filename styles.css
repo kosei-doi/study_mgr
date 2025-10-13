@@ -97,8 +97,31 @@ body {
   border-right: 1px solid var(--border);
   padding: 10px;
 }
-.timetable [role="columnheader"] { background: rgba(0,0,0,0.02); font-weight: 600; }
-.timetable .slot-title { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.timetable [role="columnheader"] { 
+  background: var(--bg);
+  font-weight: 600; 
+}
+
+/* 時限ヘッダーの親（左端の列） */
+.timetable [role="row"] > [role="columnheader"]:first-child {
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 時限ヘッダー（左側）のデザイン */
+.timetable .slot-title { 
+  font-size: 13px; 
+  font-weight: 700;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--panel), var(--bg));
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 .timetable .subject-name { font-weight: 600; margin-bottom: 6px; }
 .timetable [role="gridcell"] { height: var(--cell-h); display: flex; flex-direction: column; justify-content: center; position: relative; }
 .timetable .subject-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

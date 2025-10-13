@@ -527,6 +527,7 @@ async function addStudyTime(time) {
     saveSubjects(subjects);
     updateTimetableProgressBars();
     updateSummaryStats();
+    hideModal(); // モーダルを閉じる
     console.log(`✅ ${s.name} の学習時間を追加: +${time}分 (合計: ${s.totalTime}分)`);
   } else {
     console.error('❌ 科目が見つかりません。dataId:', modalState.dataId);
