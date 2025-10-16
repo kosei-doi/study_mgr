@@ -139,8 +139,12 @@ function getClassDaysByWeekday(weekday) {
 }
 
 function getTodayISO() {
-  // テスト用固定値（2025年10月13日）
-  return '2025-10-13';
+  // 実際の今日の日付を取得
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function getCurrentWeekForSubject(subjectName, todayISO = getTodayISO()) {
@@ -461,6 +465,7 @@ function applyProgressUpdate() {
 
 // グローバル変数
 let selectedTime = 0;
+let lastUpdateDate = null;
 
 function wireEvents() {
   // 理解したボタン
@@ -536,9 +541,28 @@ async function addStudyTime(time) {
 
 // テーマ初期化は不要
 
+// 日付が変わったかチェックして必要に応じて更新
+function checkAndUpdateForNewDay() {
+  const today = getTodayISO();
+  if (lastUpdateDate !== today) {
+    console.log(`日付が変わりました: ${lastUpdateDate} → ${today}`);
+    lastUpdateDate = today;
+    
+    // 週数表示と進捗バーを更新
+    updateWeekDisplay();
+    updateTimetableProgressBars();
+    updateSummaryStats();
+    
+    console.log('日付変更に伴う更新を実行しました');
+  }
+}
+
 async function boot() {
   // Firebase接続チェック
   checkFirebase();
+  
+  // 今日の日付を記録
+  lastUpdateDate = getTodayISO();
   
   // デバッグ: 現在週数を確認
   console.log('=== デバッグ情報 ===');
@@ -576,6 +600,19 @@ async function boot() {
   updateWeekDisplay();
   updateSummaryStats();
   wireEvents();
+  
+  // 定期的に日付変更をチェック（1分ごと）
+  setInterval(checkAndUpdateForNewDay, 60000);
+  
+  // ページがフォーカスされた時にも日付変更をチェック
+  window.addEventListener('focus', checkAndUpdateForNewDay);
+  
+  // ページが表示された時にも日付変更をチェック（visibilitychange）
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      checkAndUpdateForNewDay();
+    }
+  });
   
   console.log('=== 初期化完了 ===');
 }
